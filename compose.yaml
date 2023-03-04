@@ -1,0 +1,21 @@
+services:
+  db:
+    # Match its version in Alpine
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pleroma
+      POSTGRES_DB: pleroma
+      POSTGRES_PASSWORD: '<password>'
+    volumes:
+      - ./config/setup_db.sql:/docker-entrypoint-initdb.d/setup_db.sql:ro
+  pleroma:
+    image: myl7/pleroma
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/opt/pleroma/uploads
+      - ./static:/opt/pleroma/instance/static
+    ports:
+      - 127.0.0.1:8000:4000
